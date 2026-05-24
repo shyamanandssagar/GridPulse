@@ -9,7 +9,7 @@ const { Server } = require('socket.io');
 
 
 const connectDB = require('./config/db');
-
+const { notFound, errorHandler } = require('./middleware/errorMiddleware');
 
 
 
@@ -26,7 +26,8 @@ app.use(express.urlencoded({ extended: true }));
 if (process.env.NODE_ENV !== 'production') app.use(morgan('dev'));
 
 
-
+app.use(notFound);
+app.use(errorHandler);
 const io = new Server(server);
 
 
