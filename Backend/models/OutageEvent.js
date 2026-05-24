@@ -1,10 +1,29 @@
 const mongoose = require('mongoose');
 
+
+
 // An OutageEvent records a discrete fault on a feeder. We use these to compute
 // reliability indices (SAIFI, SAIDI, CAIDI, ASAI, ENS) over a time window.
 //
 // affectedMeters and affectedLoadKW are snapshotted at the time of the event so
 // that even if the network changes later, historical indices remain stable.
+
+
+
+
+// Each document represents:
+
+// One outage/fault event in the power distribution system.
+
+// Example:
+
+// feeder trips at 2 PM
+// restored at 3 PM
+// 500 consumers affected
+
+// That becomes one outage event record.
+
+
 const outageSchema = new mongoose.Schema(
   {
     feeder: { type: mongoose.Schema.Types.ObjectId, ref: 'Feeder', required: true },

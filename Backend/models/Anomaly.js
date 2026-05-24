@@ -1,5 +1,8 @@
 const mongoose = require('mongoose');
 
+//Each document represents:  One abnormal event detected in the grid.
+
+
 const anomalySchema = new mongoose.Schema(
   {
     meter: { type: mongoose.Schema.Types.ObjectId, ref: 'Meter' },

@@ -18,7 +18,7 @@ const meterSchema = new mongoose.Schema(
     // Live status (updated by simulator)
     status: { type: String, enum: ['online', 'offline'], default: 'online' },
     lastSeenAt: Date,
-    cumulativeKWh: { type: Number, default: 0 },     // since billing cycle start
+    cumulativeKWh: { type: Number, default: 0 },    //Total electricity consumed by this meter during current billing cycle.  since billing cycle start
     billingCycleStart: { type: Date, default: () => new Date(new Date().setDate(1)) },
     // Per Time-of-Use bucket cumulative kWh (used by tariffEngine).
     // Simulator credits each tick to peak / normal / offpeak based on hour.
