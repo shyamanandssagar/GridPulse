@@ -22,7 +22,7 @@ const meterSchema = new mongoose.Schema(
     billingCycleStart: { type: Date, default: () => new Date(new Date().setDate(1)) },
     // Per Time-of-Use bucket cumulative kWh (used by tariffEngine).
     // Simulator credits each tick to peak / normal / offpeak based on hour.
-    tariffSlots: {
+    tariffSlots: {  //Electricity used in Kwh
       peak:    { type: Number, default: 0 },
       normal:  { type: Number, default: 0 },
       offpeak: { type: Number, default: 0 },
