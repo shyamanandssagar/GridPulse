@@ -26,7 +26,7 @@ const noise = (pct) => 1 + (Math.random() * 2 - 1) * pct;
 function generateReading(meter, faultedFeederIds, intervalMs) {
   // dark if its feeder is in the faulted set (set is built once per tick and
   // already includes feeders that are down because of a faulted parent).
-  const isOffline = faultedFeederIds.has(String(meter.feeder));
+  const isOffline = faultedFeederIds.has(String(meter.feeder));  //Is this meter connected to a failed feeder?
   if (isOffline) {
     // zero everything. _offline tells the rest of the pipeline to skip this one.
     return {
@@ -46,15 +46,24 @@ function generateReading(meter, faultedFeederIds, intervalMs) {
   // the -0.5 keeps quiet hours near base and lets the evening push toward peak.
   const hour = new Date().getHours();
   const demandMultiplier = dailyCurve[hour];
-  const targetLoad =
+  const targetLoad =   //The amount of power the simulator WANTS the meter to consume at that moment.
+  //
     (meter.baseLoadKW + (meter.peakLoadKW - meter.baseLoadKW) * (demandMultiplier - 0.5)) *
     noise(Number(process.env.SIM_NOISE) || 0.05);
-  const powerKW = Math.max(0.05, targetLoad); // floor so it never hits 0 online
+
+   // The simulator is saying:“At this time of day, this house/factory/shop is probably consuming around some specific value kW gotten from meter. ”
+
+
+  const powerKW = Math.max(0.05, targetLoad); // floor so it never hits 0 online   Otherwise:anomaly detector may think power outage.
+
+
 
   // 230V nominal + small noise. ~2% of ticks force a sag/swell so the detector
   // has something to catch.
   let voltage = 230 * noise(0.015);
-  if (Math.random() < 0.02) voltage *= Math.random() < 0.5 ? 0.85 : 1.12;
+  if (Math.random() < 0.02) voltage *= Math.random() < 0.5 ? 0.85 : 1.12;  //Without this:anomaly detector never gets triggered.  Voltage Sag,Voltage Swell
+
+
 
   // pf 0.85-0.97, current from P = V*I*pf
   const powerFactor = 0.85 + Math.random() * 0.12;
@@ -62,9 +71,11 @@ function generateReading(meter, faultedFeederIds, intervalMs) {
   const frequency = 50 * noise(0.001); // freq barely moves, tiny wobble
 
   // 3ph imbalance only. mostly <3%, ~3% of the time inject a real one (8-15%).
-  let phaseImbalance = 0;
+  let phaseImbalance = 0;  //All three phases should carry almost equal load.
+
+
   if (meter.phases === 3) {
-    phaseImbalance = Math.random() < 0.03 ? 8 + Math.random() * 7 : Math.random() * 3;
+    phaseImbalance = Math.random() < 0.03 ? 8 + Math.random() * 7 : Math.random() * 3;  //it directly generates a realistic imbalance percentage value rather than calculating
   }
 
   // tampering: factor < 1 means the meter under-reports. powerKW is what the
@@ -73,7 +84,7 @@ function generateReading(meter, faultedFeederIds, intervalMs) {
   const factor = meter.tamperingFactor != null ? meter.tamperingFactor : 1;
   const reportedKW = powerKW * factor;
   const reportedCurrent = (reportedKW * 1000) / (voltage * powerFactor);
-  const kWhDelta = (reportedKW * intervalMs) / 3_600_000; // kW over the interval -> kWh
+  const kWhDelta = (reportedKW * intervalMs) / 3_600_000; // kW over the interval -> kWh  //how many units were consumed during THIS simulation interval
   const slot = classifyHour(new Date().getHours()); // peak / normal / offpeak
 
   return {

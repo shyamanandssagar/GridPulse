@@ -1,5 +1,4 @@
-// anomalyDetector.js
-// Per-reading threshold checks. Fixed bands, no rolling stats or ML.
+
 
 const Anomaly = require('../models/Anomaly');
 

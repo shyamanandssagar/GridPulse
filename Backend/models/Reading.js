@@ -1,8 +1,6 @@
 const mongoose = require('mongoose');
 
-// One sample emitted by a meter. For a real production system this would live
-// in a time-series collection / InfluxDB. For demo purposes, a regular collection
-// with TTL keeps things simple while still being correct.
+// One sample emitted by a meter. 
 const readingSchema = new mongoose.Schema(
   {
     meter: { type: mongoose.Schema.Types.ObjectId, ref: 'Meter', required: true },
